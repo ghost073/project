@@ -1,0 +1,26 @@
+server {
+    listen  127.0.0.1:80;
+    server_name 1.1.com;
+    index   index.php index.html;
+    root    E:/web/loc;
+
+location ~ .*\.(php|php5)?$
+{
+fastcgi_pass  127.0.0.1:9000;
+fastcgi_index index.php;
+include fastcgi.conf;
+}
+
+location /files {
+alias E:/web/files;
+internal;
+}
+
+}
+
+<?php
+$path = $_GET["path"];
+
+//var_dump('/files/'.$path);exit;
+header("X-Accel-Redirect: /files/" . $path);
+exit;

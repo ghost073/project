@@ -1,0 +1,27 @@
+#!/bin/bash
+source /etc/profile
+#目录
+DAY=$(date +%Y%m%d)
+DEL_DAY=$(date +%Y%m%d -d "7 day ago")
+ROOT_PATH="/www/backup/${DAY}"
+DEL_ROOT_PATH="/www/backup/${DEL_DAY}"
+MYSQL_DUMP=$(which mysqldump)
+
+#判断目录是否存在 
+if test ! -d $ROOT_PATH
+then 
+    mkdir $ROOT_PATH
+fi
+
+#备份数据库，创建dump用户 有select,lock table              
+$MYSQL_DUMP -h127.0.0.1 -udump bbs | gzip > $ROOT_PATH/bbs_${DAY}.sql.gz
+
+#备份图片
+cd /www/wwwroot/img 
+tar -zcvf $ROOT_PATH/pic_${DAY}.tar.gz uploads
+
+#删除7天前的目录
+rm -rf $DEL_ROOT_PATH
+
+#传输数据到备份服务器
+rsync -avzrtopg $ROOT_PATH 192.168.1.1::backup
