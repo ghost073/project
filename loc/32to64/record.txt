@@ -1,0 +1,53 @@
+2013-9-16
+1.
+32位ID转64位ID
+http://dev.dota2.com/showthread.php?t=47115&page=27&p=312817&viewfull=1#post312817
+
+ Quote Originally Posted by Lazze View Post
+If you are using PHP, use the following in case your server is running 64-bit
+In the case you don't use 64-bit php (works on 32- and 64-bit) - you have to have the gmp extenison installed (usually just need to uncomment php_gmp.dll in your php.ini)
+
+PHP Code:
+define("STEAM_ID_UPPER_32_BITS", "00000001000100000000000000000001");
+    // gets the lower 32-bits of a 64-bit steam id
+    function GET_32_BIT ($ID_64) {
+        $upper = gmp_mul( bindec(STEAM_ID_UPPER_32_BITS) , "4294967296" );
+        return gmp_strval(gmp_sub($ID_64,$upper));
+    }
+
+    // creates a 64-bit steam id from the lower 32-bits
+    function MAKE_64_BIT ( $ID_32, $hi = false ) {
+        if ($hi === false) {
+            $hi = bindec(STEAM_ID_UPPER_32_BITS);
+        }
+
+        // workaround signed/unsigned braindamage on x32
+        $hi = sprintf ( "%u", $hi );
+        $ID_32 = sprintf ( "%u", $ID_32 );
+
+        return gmp_strval ( gmp_add ( gmp_mul ( $hi, "4294967296" ), $ID_32 ) );      
+    } 
+i.e.
+PHP Code:
+$my_64_id = "76561197986553915";
+$my_32_id = "26288187";
+
+
+$calc_32 = GET_32_BIT($my_64_id); // gives "26288187"
+$calc_64 = MAKE_64_BIT($my_32_id); // gives "76561197986553915" 
+note that the numbers must be stored as strings.
+
+
+edit:
+Quote Originally Posted by Lazze View Post
+On 32-bit systems, you have to do it this way:
+Code:
+
+SteamID - 76561197960265728
+
+In words, subtract 76561197960265728 from the 64-bit SteamID and you will get the AccountID. All credit goes to Alesix for figuring this out.
+that shouldn't work because you're using 64-bit arithmetic to do the subtraction which you can't do on a 32-bit php.....
+
+edit:
+i should correct myself; that WON'T work because 32-bit php stores 64-bit numbers as floats, which means the result will not be the correct steam ID because of rounding errors.
+(I found that out the hard way!) 
