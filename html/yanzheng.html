@@ -1,0 +1,142 @@
+<script type="text/javascript">
+$(document).ready(function() {
+    // 返回 
+    $('#reset').click(function() {
+        history.go(-1);
+    });
+    // 密码检查
+    $("#password").blur(function() {
+        check_pass();
+    });
+    // 重复密码检查
+    $('#re_password').blur(function() {
+        check_repass();
+    });
+    // 用户名检测
+    $('#username').blur(function() {
+        check_username();
+    });
+    
+    // 提交检查
+    $("#edit_form").submit(function() {
+        // 表单错误数
+        var err_num = 0;
+      
+        // 密码检测
+        if (false === check_pass()) {
+            err_num ++;
+        }
+        
+        // 重复密码检测
+        if (false === check_repass()) {
+            err_num ++;
+        }
+        
+        // 用户名检测
+        if (false === check_username()) {
+            err_num ++;
+        }
+        
+        if (err_num > 0) {
+            return false;
+        }
+
+        return true;
+    });
+});
+
+// 用户名检测
+function check_username() {
+    // 用户名
+    var username_val = $.trim($("#username").val());
+    // 长度
+    var username_len = username_val.length;
+
+    if ((username_len < 3) || (username_len > 12)) {
+        view_err($("#username"), 2, '用户名在3-12字符之间');
+        return false;
+    }
+
+    // 检测用户名唯一性
+    var status = null;
+    var ajax_url = '4';
+
+    $.ajax({
+        url : ajax_url,
+        data : {username: username_val, id:gID},
+        type : "POST",
+        dataType : "json",
+        async : false, 
+        cache : false,
+        success : function(msg) {
+            if (msg.errno == 100) {
+                // 用户名正确
+                view_err($("#username"), 1, '');
+                status = true;
+            } else if (msg.errno == 111) {
+                // 用户名已存在
+                view_err($("#username"), 2, '用户名已存在');
+                status = false;
+            } else {
+                alert(msg.errstr);
+                status = false;
+            }
+        }
+    });
+
+    return status;
+}
+// 密码检测
+function check_pass() {
+    var obj = $('#password');
+    // 密码
+    var pass_val = $.trim(obj.val());
+
+    // 密码正则
+    var pass_reg = /^(?!\D+$)(?![^a-zA-Z]+$)\S{6,14}$/;
+    // 新添加用户，或密码不为空，检查密码规则
+    if ((gID < 1) || (pass_val)) {
+        if (!pass_reg.test(pass_val)) {
+            view_err(obj, 2, '密码必须包含字母和数字且在6-14位之间');
+            return false;
+        }
+    }
+
+    // 显示正确信息
+    view_err(obj, 1, '');
+    return true;
+}
+
+// 确认密码检测
+function check_repass() {
+    // 密码
+    var pass_val = $.trim($('#password').val());
+    // 重复密码
+    var repass_val = $.trim($('#re_password').val());
+
+    if (pass_val != repass_val) {
+        view_err($('#re_password'), 2, '密码不一致');
+        return false;
+    }
+    // 显示正确信息
+    view_err($('#re_password'), 1, '');
+    return true;
+}
+
+// 显示错误信息
+function view_err(obj, is_err, msg) {
+    // 清除原错误标示
+    $(obj).parent('p').find('span:last').remove();
+    // 显示错误信息
+    switch (is_err) {
+        case 1: // 成功信息
+            $(obj).parent('p').append('<span class="input-notification success png_bg">' + msg + '</span>');    
+            break;
+            break;
+        case 2:     // 错误信息
+            $(obj).parent('p').append('<span class="input-notification error png_bg">' + msg + '</span>');    
+            break;
+    }
+    return true;
+}   
+</script>

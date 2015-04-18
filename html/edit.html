@@ -1,0 +1,37 @@
+<select name="tv_barnd_1[]" id="tvLeft" size="4" MULTIPLE style="width: 200px;height:100px">  
+{foreach from=$brand_tv key=key item=item}
+<option value="{$key}">{$item}</option>
+{/foreach}
+</select>  
+<input type="button" onclick="insertLR('tvLeft', 'tvRight');" value="添 加">  
+<input type="button" onclick="insertLR('tvRight', 'tvLeft');" value="移 除">
+<input type="button" onclick="insertAllLR('tvRight', 'tvLeft');" value="全 移">    
+<select name="tv_brand[]" id="tvRight" size="4" MULTIPLE style="width:200px;height:100px">
+{foreach from=$zq.tv_rel_new item=item}
+<option value="{$item}">{$brand_tv[$item]}</option>
+{/foreach}
+</select>  
+ 
+<script type="text/javascript" src="left_right_select.js"></script>
+<script type="text/javascript">
+{literal}
+$(document).ready(function() {
+    // 取消
+    $("#reset_btn").click(function() {
+        history.go(-1);
+    });
+    // 提交检查
+    $("#edit_form").submit(function() {
+
+        // 右侧电视品牌选中
+        rightAllSelect('tvRight');
+        // 右侧盒子品牌选中
+        rightAllSelect('boxRight');
+        
+        return true;
+    });
+});
+{/literal}    
+</script>
+</body>
+</html>
