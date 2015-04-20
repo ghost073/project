@@ -1,0 +1,46 @@
+server {
+    listen  127.0.0.1:80;
+    server_name a.com;
+    index   index.php index.html;
+    root    /www/wwwroot/a.com/;
+
+    ssi on; 
+    ssi_silent_errors on; 
+
+    location / { 
+    #ssi引入公共模板
+    location ~^/templets/ {
+        root  /www/wwwroot/abc/;
+        break;
+    }   
+
+    location ~ /\.svn\/(.*) {
+        deny  all;
+    }   
+
+
+    if (!-e $request_filename) {
+        rewrite ^/(.*)$ /index.php?/$1 last;
+    }   
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        include lua/cgi.conf;
+        fastcgi_index index.php;
+        proxy_set_header   Host             $host;
+        proxy_set_header   X-Real-IP        $remote_addr;
+        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+        set_real_ip_from   10.69.1.44;
+        real_ip_header     X-Real-IP;
+        fastcgi_param SCRIPT_FILENAME /www/wwwroot/a.com$fastcgi_script_name;
+    }   
+    }   
+
+    #access_log  /www/apple.log  main;
+
+    #error_log /www/apple_erro.log;
+#        error_page 404 403  /411.html;
+#        location = /411.html {
+#                root   /www/wwwroot/404/;
+#        }   
+} 
