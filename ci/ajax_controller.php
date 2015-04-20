@@ -7,7 +7,7 @@
 */
 class ajax extends CI_Controller {
     public function __construct() {
-    //sdaf
+    //sdafkljkjlk
         parent::__construct();
         $this->load->helper('function');
     }
