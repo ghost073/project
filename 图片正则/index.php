@@ -22,8 +22,8 @@ class a {
         // 替换IMG标签 src="data:image" 格式数据太大替换为空
 		$img_patten = '/<img[^>]*src=[\'"]?(data:image[^>\'"\s]*)[\'"]?[^>]*>/i';
 		$content = preg_replace($img_patten, '', $content);
-        // 替换不以img3.07073.com开头的图片
-        $img_patten='/<img[^>]*src=[\'"]?(?!http:\/\/(img3|img1)\.07073\.com)([^>\'"\s]+)[\'"]?[^>]*>/i';
+        // 替换不以img3.a.com开头的图片
+        $img_patten='/<img[^>]*src=[\'"]?(?!http:\/\/(img3|img1)\.a\.com)([^>\'"\s]+)[\'"]?[^>]*>/i';
         $content = preg_replace($img_patten, '', $content);
     }
     
