@@ -1,0 +1,17 @@
+3.0 和 2.0 区别
+1. session类使用原生php session ，可使用redis做session共享操作
+
+$config['sess_driver'] = 'redis';
+$config['sess_cookie_name'] = 'oauth';
+$config['sess_expiration'] = 7200;
+$config['sess_save_path'] = 'tcp://127.0.0.1:6379?prefix=oauth_&database=9&timeout=5';
+$config['sess_match_ip'] = FALSE;
+$config['sess_time_to_update'] = 300;
+$config['sess_regenerate_destroy'] = FALSE;
+
+
+tcp://127.0.0.1:6379?prefix=oauth_&database=9&timeout=5
+使用tcp 链接 服务器6379端口，前缀oauth_ 数据库9，超时5秒
+
+3.0 改变
+http://www.codeigniter.com/userguide3/changelog.html
